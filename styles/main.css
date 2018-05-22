@@ -20,3 +20,15 @@ body {
 .navbar {
   background-color: whitesmoke;
 }
+
+.hide {
+  display: none;
+}
+
+#searchbar {
+  width: 700px;
+}
+
+h1 {
+  width: 100%;
+}

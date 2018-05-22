@@ -1,1 +1,3 @@
-console.error('hello');
+const events = require('./events');
+
+events.myLinks();

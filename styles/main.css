@@ -1,0 +1,22 @@
+body {
+  background-color: orange;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-size: 36px;
+  padding-right: 300px;
+}
+
+.navbar-nav {
+  font-size: 24px;
+}
+
+.navbar {
+  background-color: whitesmoke;
+}

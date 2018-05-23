@@ -1,3 +1,5 @@
+const tmdb = require('./tmdb');
+
 const myLinks = () => {
   $(document).click((e) => {
     if (e.target.id === 'authenticate') {
@@ -14,11 +16,17 @@ const myLinks = () => {
       $('#authScreen').addClass('hide');
     }
   });
-  // $('#authenticate').click()
-  // $('#mine').click()
-  // $('#navSearch').click()
 };
 
+const pressEnter = () => {
+  // keypress event goes here
+  tmdb.showResults();
+};
+
+const initializer = () => {
+  myLinks();
+  pressEnter();
+};
 module.exports = {
-  myLinks,
+  initializer,
 };

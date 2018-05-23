@@ -32,3 +32,13 @@ body {
 h1 {
   width: 100%;
 }
+
+.glyphicon-search {
+  background-color: lightgrey;
+  height: 32px;
+  padding: 10px;
+}
+
+#search-input {
+  width: 50%;
+}

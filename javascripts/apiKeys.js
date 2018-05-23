@@ -15,7 +15,8 @@ const apiKeys = () => {
 const retrieveKeys = () => {
   apiKeys()
     .then((results) => {
-      tmdb.setKey(results);
+      tmdb.setKey(results.tmdb.apiKey);
+      // only passing one object so adding tmdb.apiKey to do that
     })
     .catch((err) => {
       console.error('nope not today', err);

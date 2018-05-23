@@ -20,7 +20,12 @@ const myLinks = () => {
 
 const pressEnter = () => {
   // keypress event goes here
-  tmdb.showResults();
+  $(document).keypress((e) => {
+    if (e.key === 'Enter') {
+      const searchWords = $('#search-input').val().replace(' ', '%20');
+      tmdb.showResults(searchWords);
+    }
+  });
 };
 
 const initializer = () => {

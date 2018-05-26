@@ -17,6 +17,8 @@ const retrieveKeys = () => {
     .then((results) => {
       tmdb.setKey(results.tmdb.apiKey);
       // only passing one object so adding tmdb.apiKey to do that
+      firebase.initializeApp(results.firebase);
+      // connecting firebase
     })
     .catch((err) => {
       console.error('nope not today', err);

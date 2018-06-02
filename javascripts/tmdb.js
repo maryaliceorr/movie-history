@@ -11,6 +11,10 @@ const setKey = (key) => {
   // this is to get our images
 };
 
+const getImageConfig = () => {
+  return imageConfig;
+};
+
 const getConfig = () => {
   tmdbConfiguration()
     .then((result) => {
@@ -49,7 +53,7 @@ const showResults = (searchText) => {
   // dom.domString([singleMovie, singleMovie, singleMovie, singleMovie, singleMovie, singleMovie,]);
   searchTMDB(searchText)
     .then((result) => {
-      dom.domString(result, imageConfig);
+      dom.domString(result, imageConfig, 'movies');
     })
     .catch((err) => {
       console.error('oops you did it again', err);
@@ -59,4 +63,5 @@ const showResults = (searchText) => {
 module.exports = {
   showResults,
   setKey,
+  getImageConfig,
 };

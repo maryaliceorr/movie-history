@@ -32,6 +32,19 @@ const getAllMoviesEvent = () => {
     });
 };
 
+const deleteMovieFromFirebase = () => {
+  $(document).on('click', '.deleteMovieFromCollectionEvent', (e) => {
+    const movieToDeleteId = $(e.target).closest('.movie').data('firebaseId');
+    firebaseApi.deleteMovieFromDb(movieToDeleteId)
+      .then(() => {
+        getAllMoviesEvent();
+      })
+      .catch((error) => {
+        console.error('error from deletion of movie', error);
+      });
+  });
+};
+
 const pressEnter = () => {
   // keypress event goes here
   $(document).keypress((e) => {
@@ -66,6 +79,7 @@ const initializer = () => {
   myLinks();
   pressEnter();
   saveMovieToWishListEvent();
+  deleteMovieFromFirebase();
 };
 module.exports = {
   initializer,

@@ -6,7 +6,7 @@ const domString = (movieArray, imgConfig, whereToPrint, myCollectionMode = false
       strang += `<div class="row">`;
     }
     strang += `<div class="col-sm-6 col-md-4">`;
-    strang += `<div class="thumbnail movie">`;
+    strang += `<div class="thumbnail movie" data-firebase-id="${movie.id}">`;
     if (myCollectionMode) {
       strang += `<a class="btn deleteMovieFromCollectionEvent">X</a>`;
     }
@@ -15,7 +15,7 @@ const domString = (movieArray, imgConfig, whereToPrint, myCollectionMode = false
     strang += `<h3 class="movie-title">${movie.original_title ? movie.original_title : movie.title}</h3>`;
     strang += `<p class="movie-overview">${movie.overview}</p>`;
     if (!myCollectionMode) {
-      strang += `<p><a class="btn btn-default addMovieToWishList" role="button">Wish List</a></p>`;
+      strang += `<p><a class="btn btn-default addMovieToWishList" role="button">Watch List</a></p>`;
     } else if (myCollectionMode && !movie.isWatched) {
       strang += `<p><a class="btn btn-primary updateMovieToWatched" role="button">I've Watched It</a></p>`;
     } else {

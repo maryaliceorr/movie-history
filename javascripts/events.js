@@ -22,6 +22,16 @@ const myLinks = () => {
   });
 };
 
+const pressEnter = () => {
+  // keypress event goes here
+  $(document).keypress((e) => {
+    if (e.key === 'Enter' && $('#search').hasClass('hide')) {
+      const searchWords = $('#search-input').val().replace(' ', '%20');
+      tmdb.showResults(searchWords);
+    }
+  });
+};
+
 const getAllMoviesEvent = () => {
   firebaseApi.getAllMovies()
     .then((moviesArray) => {
@@ -45,16 +55,6 @@ const deleteMovieFromFirebase = () => {
   });
 };
 
-const pressEnter = () => {
-  // keypress event goes here
-  $(document).keypress((e) => {
-    if (e.key === 'Enter') {
-      const searchWords = $('#search-input').val().replace(' ', '%20');
-      tmdb.showResults(searchWords);
-    }
-  });
-};
-
 const saveMovieToWishListEvent = () => {
   $(document).on('click', '.addMovieToWishList', (e) => {
     const movieToAddCard = $(e.target).closest('.movie');
@@ -75,12 +75,61 @@ const saveMovieToWishListEvent = () => {
   });
 };
 
+const authEvents = () => {
+  $('#signin-button').click((e) => {
+    e.preventDefault();
+    // keeps the dom from printing the form values
+    const email = $('#inputEmail').val();
+    const pass = $('#inputPassword').val();
+    firebase.auth().signInWithEmailAndPassword(email, pass)
+      // .then((user) => {
+      //   $('#myMovies').removeClass('hide');
+      //   $('#search').addClass('hide');
+      //   $('#authScreen').addClass('hide');
+      //   // call the getMoviesEvent - copied from hide class stuff above
+      // }) moved this to auth.js
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.error(errorMessage);
+      });
+  });
+
+  $('#register-button').click(() => {
+    const email = $('#registerEmail').val();
+    const pass = $('#registerPassword').val();
+    firebase.auth().createUserWithEmailAndPassword(email, pass).catch((error) => {
+      const errorMessage = error.message;
+      console.error(errorMessage);
+    });
+  });
+
+  $('#register-link').click(() => {
+    $('#login-form').addClass('hide');
+    $('#registration-form').removeClass('hide');
+  });
+
+  $('#signin-link').click(() => {
+    $('#login-form').removeClass('hide');
+    $('#registration-form').addClass('hide');
+  });
+
+  $('#logout').click(() => {
+    firebase.auth().signOut().then(() => {
+    // sign-out successful
+    }).catch((error) => {
+      console.error(error);
+    });
+  });
+};
+
 const initializer = () => {
   myLinks();
   pressEnter();
   saveMovieToWishListEvent();
   deleteMovieFromFirebase();
+  authEvents();
 };
 module.exports = {
   initializer,
+  getAllMoviesEvent,
 };

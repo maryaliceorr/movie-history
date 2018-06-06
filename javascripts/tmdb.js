@@ -8,7 +8,6 @@ let imageConfig = {};
 const setKey = (key) => {
   tmdbKey = key;
   getConfig();
-  // this is to get our images
 };
 
 const getImageConfig = () => {
@@ -26,7 +25,8 @@ const getConfig = () => {
 };
 
 const tmdbConfiguration = () => {
-  return new Promise ((resolve, reject) => {
+  // PROMISE GOES HERE
+  return new Promise((resolve, reject) => {
     $.ajax(`https://api.themoviedb.org/3/configuration?api_key=${tmdbKey}`)
       .done((data) => {
         resolve(data);
@@ -50,13 +50,12 @@ const searchTMDB = (txt) => {
 };
 
 const showResults = (searchText) => {
-  // dom.domString([singleMovie, singleMovie, singleMovie, singleMovie, singleMovie, singleMovie,]);
   searchTMDB(searchText)
     .then((result) => {
       dom.domString(result, imageConfig, 'movies');
     })
     .catch((err) => {
-      console.error('oops you did it again', err);
+      console.error('search error', err);
     });
 };
 

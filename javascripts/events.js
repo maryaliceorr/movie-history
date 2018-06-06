@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 const tmdb = require('./tmdb');
 const firebaseApi = require('./firebaseApi');
 const dom = require('./dom');
@@ -23,12 +25,32 @@ const myLinks = () => {
 };
 
 const pressEnter = () => {
-  // keypress event goes here
+  // big old keypress event
   $(document).keypress((e) => {
-    if (e.key === 'Enter' && $('#search').hasClass('hide')) {
-      const searchWords = $('#search-input').val().replace(' ', '%20');
+    if (e.key === 'Enter' && !$('#search').hasClass('hide')) {
+      const searchWords = $('#searchBar').val().replace(' ', '%20');
       tmdb.showResults(searchWords);
     }
+  });
+};
+
+const saveMovieToWishlistEvent = () => {
+  $(document).on('click', '.addMovieToWishlist', (e) => {
+    const movieToAddCard = $(e.target).closest('.movie');
+    const movieToAdd = {
+      title: movieToAddCard.find('.movie-title').text(),
+      overview: movieToAddCard.find('.movie-overview').text(),
+      'poster_path': movieToAddCard.find('img').data('poster'),
+      rating: 0,
+      isWatched: false,
+    };
+    firebaseApi.saveMovieToWishlist(movieToAdd)
+      .then(() => {
+        movieToAddCard.remove();
+      })
+      .catch((error) => {
+        console.error('error in saving movie', error);
+      });
   });
 };
 
@@ -42,6 +64,26 @@ const getAllMoviesEvent = () => {
     });
 };
 
+const getWishlistMoviesEvent = () => {
+  firebaseApi.getWishlistMovies()
+    .then((moviesArray) => {
+      dom.domString(moviesArray, tmdb.getImageConfig(), 'savedMovies', true);
+    })
+    .catch((error) => {
+      console.error('error in get all movies', error);
+    });
+};
+
+const getWatchedMovies = () => {
+  firebaseApi.getWatchedMovies()
+    .then((moviesArray) => {
+      dom.domString(moviesArray, tmdb.getImageConfig(), 'savedMovies', true);
+    })
+    .catch((error) => {
+      console.error('error in get watched movies', error);
+    });
+};
+
 const deleteMovieFromFirebase = () => {
   $(document).on('click', '.deleteMovieFromCollectionEvent', (e) => {
     const movieToDeleteId = $(e.target).closest('.movie').data('firebaseId');
@@ -50,56 +92,67 @@ const deleteMovieFromFirebase = () => {
         getAllMoviesEvent();
       })
       .catch((error) => {
-        console.error('error from deletion of movie', error);
+        console.error('error from delete movie', error);
       });
   });
 };
 
-const saveMovieToWishListEvent = () => {
-  $(document).on('click', '.addMovieToWishList', (e) => {
-    const movieToAddCard = $(e.target).closest('.movie');
-    const movieToAdd = {
-      title: movieToAddCard.find('.movie-title').text(),
-      overview: movieToAddCard.find('.movie-overview').text(),
-      'poster_path': movieToAddCard.find('img').data('poster'),
+const updateMovieEvent = () => {
+  $(document).on('click', '.updateMovieToWatched', (e) => {
+    const movieToUpdateId = $(e.target).closest('.movie').data('firebaseId');
+    const movieToUpdateCard = $(e.target).closest('.movie');
+    const updatedMovie = {
+      title: movieToUpdateCard.find('.movie-title').text(),
+      overview: movieToUpdateCard.find('.movie-overview').text(),
+      'poster_path': movieToUpdateCard.find('img').data('poster'),
       rating: 0,
-      isWatched: false,
+      isWatched: true,
     };
-    firebaseApi.saveMovieToWishList(movieToAdd)
+    firebaseApi.updateMovieToWatchedInDb(updatedMovie, movieToUpdateId)
       .then(() => {
-        movieToAddCard.remove();
+        getAllMoviesEvent();
       })
-      .catch ((error) => {
-        console.error('error in saving movie', error);
+      .catch((error) => {
+        console.error('error in update movie', error);
       });
+  });
+};
+
+const filterEvents = () => {
+  $('#filterButtons').on('click', (e) => {
+    const classList = e.target.classList;
+    if (classList.contains('wishlist')) {
+      // show only isWatched: false
+      getWishlistMoviesEvent();
+    } else if (classList.contains('watched')) {
+      // show only if isWatched: true
+      getWatchedMovies();
+    } else {
+      getAllMoviesEvent();
+    }
   });
 };
 
 const authEvents = () => {
-  $('#signin-button').click((e) => {
+  $('#signin-btn').click((e) => {
     e.preventDefault();
-    // keeps the dom from printing the form values
     const email = $('#inputEmail').val();
     const pass = $('#inputPassword').val();
     firebase.auth().signInWithEmailAndPassword(email, pass)
-      // .then((user) => {
-      //   $('#myMovies').removeClass('hide');
-      //   $('#search').addClass('hide');
-      //   $('#authScreen').addClass('hide');
-      //   // call the getMoviesEvent - copied from hide class stuff above
-      // }) moved this to auth.js
       .catch((error) => {
-        const errorMessage = error.message;
-        console.error(errorMessage);
+        $('#signin-error-msg').text(error.message);
+        $('#signin-error').removeClass('hide');
+        console.error(error.message);
       });
   });
 
-  $('#register-button').click(() => {
+  $('#register-btn').click(() => {
     const email = $('#registerEmail').val();
     const pass = $('#registerPassword').val();
     firebase.auth().createUserWithEmailAndPassword(email, pass).catch((error) => {
-      const errorMessage = error.message;
-      console.error(errorMessage);
+      $('#register-error-msg').text(error.message);
+      $('#register-error').removeClass('hide');
+      console.error(error.message);
     });
   });
 
@@ -115,8 +168,8 @@ const authEvents = () => {
 
   $('#logout').click(() => {
     firebase.auth().signOut().then(() => {
-    // sign-out successful
     }).catch((error) => {
+      // An error happened.
       console.error(error);
     });
   });
@@ -125,10 +178,13 @@ const authEvents = () => {
 const initializer = () => {
   myLinks();
   pressEnter();
-  saveMovieToWishListEvent();
+  saveMovieToWishlistEvent();
   deleteMovieFromFirebase();
+  updateMovieEvent();
+  filterEvents();
   authEvents();
 };
+
 module.exports = {
   initializer,
   getAllMoviesEvent,

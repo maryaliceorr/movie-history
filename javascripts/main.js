@@ -1,7 +1,6 @@
-const events = require('./events');
+
 const apiKeys = require('./apiKeys');
+const events = require('./events');
 
 apiKeys.retrieveKeys();
 events.initializer();
-
-// made initializer function because calling events twice from one file and want to keep code clean
